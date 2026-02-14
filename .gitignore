@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Node
+node_modules/
+dist/
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# ML
+*.pth
+*.pt
+ml_models/tomato/dataset/
+ml_models/dataset/
+ml_models/PlantVillage/
+frontend/node_modules/
+node_modules/

@@ -1,0 +1,343 @@
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-card: #252525;
+  --accent-color: #00ADB5;
+  --accent-hover: #00FFF5;
+  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --success: #2a9d8f;
+
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+#root {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 20px;
+}
+
+.dashboard-header h1 {
+  font-size: 2.5em;
+  font-weight: 700;
+  background: linear-gradient(90deg, #00ADB5, #00FFF5);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 15px;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.add-btn {
+  background-color: var(--accent-color);
+  color: #121212;
+}
+
+.add-btn:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 173, 181, 0.3);
+}
+
+.logout-btn {
+  background-color: transparent;
+  border: 1px solid #444;
+  color: var(--text-secondary);
+}
+
+.logout-btn:hover {
+  border-color: #666;
+  color: var(--text-primary);
+}
+
+/* Plant Card */
+.plants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.plant-card {
+  background-color: var(--bg-card);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.plant-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 173, 181, 0.15);
+}
+
+.plant-image {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.plant-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.plant-card:hover .plant-image img {
+  transform: scale(1.05);
+}
+
+.plant-info {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.plant-info h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.4em;
+  color: var(--text-primary);
+}
+
+.species {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.view-btn {
+  margin-top: auto;
+  display: block;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  border-radius: 8px;
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.view-btn:hover {
+  background-color: rgba(0, 173, 181, 0.1);
+  color: var(--accent-hover);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.modal {
+  background-color: var(--bg-card);
+  padding: 30px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal h2 {
+  margin-top: 0;
+  color: var(--accent-color);
+  margin-bottom: 25px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 5px;
+}
+
+.close-btn:hover {
+  color: var(--text-primary);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9em;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 1em;
+  box-sizing: border-box;
+  /* Fix width overflow */
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--accent-color);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 173, 181, 0.2);
+}
+
+/* Plant Detail Styles */
+.plant-detail-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.plant-detail-container header {
+  margin-bottom: 40px;
+}
+
+.plant-detail-container header a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 15px;
+  font-size: 0.9em;
+}
+
+.plant-detail-container header a:hover {
+  color: var(--accent-color);
+}
+
+.species-tag {
+  background-color: rgba(0, 173, 181, 0.15);
+  color: var(--accent-color);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.5em;
+  /* Relative to h1 */
+  vertical-align: middle;
+  margin-left: 15px;
+  border: 1px solid rgba(0, 173, 181, 0.3);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 30px;
+}
+
+.health-card,
+.analysis-card {
+  background-color: var(--bg-card);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.health-card h2,
+.analysis-card h2 {
+  color: var(--accent-color);
+  margin-top: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+  margin-bottom: 25px;
+}
+
+.upload-box {
+  border: 2px dashed #444;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  margin-bottom: 20px;
+  transition: border-color 0.3s;
+}
+
+.upload-box:hover {
+  border-color: var(--accent-color);
+  background-color: rgba(0, 173, 181, 0.05);
+}
+
+.result-box {
+  margin-top: 25px;
+  background-color: rgba(0, 255, 0, 0.05);
+  border: 1px solid var(--success);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.result-box h3 {
+  margin-top: 0;
+  color: var(--success);
+}
