@@ -341,3 +341,35 @@ button {
   margin-top: 0;
   color: var(--success);
 }
+
+/* Timeline and Care Styles */
+.timeline-card,
+.care-card {
+  background-color: var(--bg-card);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.timeline-card h2,
+.care-card h2 {
+  color: var(--accent-color);
+  margin-top: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+  margin-bottom: 25px;
+}
+
+.care-list {
+  list-style: none;
+  padding: 0;
+}
+
+.care-list li {
+  margin-bottom: 15px;
+  font-size: 1.1em;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent-color);
+}

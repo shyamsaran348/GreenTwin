@@ -28,8 +28,12 @@ app.include_router(plants.router)
 app.include_router(disease.router)
 app.include_router(reminders.router)
 
+from app.database import engine, Base
+from app.models import plant, user, plant_state, disease_record, reminder, plant_log
+
 @app.on_event("startup")
 def on_startup():
+    Base.metadata.create_all(bind=engine)
     start_scheduler()
 
 @app.get("/")

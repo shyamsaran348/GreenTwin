@@ -10,11 +10,14 @@ class PlantBase(BaseModel):
 class PlantCreate(PlantBase):
     pass
 
+from .plant_log_schema import PlantLogOut
+
 class PlantOut(PlantBase):
     id: int
     user_id: int
     created_at: datetime
     plant_state: Optional[PlantStateOut] = None
+    logs: List[PlantLogOut] = []
     
     class Config:
         from_attributes = True

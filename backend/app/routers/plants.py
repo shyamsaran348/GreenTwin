@@ -37,13 +37,39 @@ def create_plant(plant: PlantCreate, db: Session = Depends(database.get_db), cur
     
     return new_plant
 
+from app.models.plant_log import PlantLog
+from app.schemas.plant_log_schema import PlantLogCreate, PlantLogOut
+
 @router.get("/{plant_id}", response_model=PlantOut)
 def get_plant(plant_id: int, db: Session = Depends(database.get_db), current_user: User = Depends(get_current_user)):
-    # Eager load plant_state to ensure it's available for the schema
-    plant = db.query(Plant).options(joinedload(Plant.plant_state)).filter(Plant.id == plant_id, Plant.user_id == current_user.id).first()
+    # Eager load plant_state and logs
+    plant = db.query(Plant).options(joinedload(Plant.plant_state), joinedload(Plant.logs)).filter(Plant.id == plant_id, Plant.user_id == current_user.id).first()
     if not plant:
         raise HTTPException(status_code=404, detail="Plant not found")
     return plant
+
+@router.post("/{plant_id}/log", response_model=PlantLogOut)
+def log_growth(
+    plant_id: int, 
+    log_data: PlantLogCreate, 
+    db: Session = Depends(database.get_db), 
+    current_user: User = Depends(get_current_user)
+):
+    plant = db.query(Plant).options(joinedload(Plant.plant_state)).filter(Plant.id == plant_id, Plant.user_id == current_user.id).first()
+    if not plant:
+        raise HTTPException(status_code=404, detail="Plant not found")
+    
+    current_health = plant.plant_state.health_score if plant.plant_state else 100.0
+    
+    new_log = PlantLog(
+        plant_id=plant_id,
+        height=log_data.height,
+        health_score=current_health
+    )
+    db.add(new_log)
+    db.commit()
+    db.refresh(new_log)
+    return new_log
 
 @router.delete("/{plant_id}")
 def delete_plant(plant_id: int, db: Session = Depends(database.get_db), current_user: User = Depends(get_current_user)):
@@ -51,7 +77,7 @@ def delete_plant(plant_id: int, db: Session = Depends(database.get_db), current_
     if not plant:
         raise HTTPException(status_code=404, detail="Plant not found")
     
-    # Manual cascade delete for safety (or rely on DB cascade if configured)
+    # Manual logs cascade if needed, but we set cascade in model.
     if plant.plant_state:
         db.delete(plant.plant_state)
         

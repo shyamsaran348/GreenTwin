@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 const PlantDetail = () => {
     const { id } = useParams();
@@ -116,6 +116,67 @@ const PlantDetail = () => {
                         </div>
                     )}
                 </div>
+            </div>
+
+            <div className="timeline-card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                    <h2 style={{ marginBottom: 0 }}>Growth Timeline</h2>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <input
+                            type="number"
+                            placeholder="Height (cm)"
+                            style={{ padding: '5px', borderRadius: '5px', border: '1px solid #444', background: '#333', color: 'white', width: '100px' }}
+                            id="heightInput"
+                        />
+                        <button
+                            onClick={async () => {
+                                const height = document.getElementById('heightInput').value;
+                                if (!height) return;
+                                try {
+                                    await api.post(`/plants/${id}/log`, { height: parseFloat(height) });
+                                    document.getElementById('heightInput').value = '';
+                                    fetchPlant();
+                                } catch (e) {
+                                    console.error(e);
+                                }
+                            }}
+                            style={{ padding: '5px 10px', background: '#00ADB5', border: 'none', borderRadius: '5px', color: 'black', cursor: 'pointer', fontWeight: 'bold' }}
+                        >
+                            Log
+                        </button>
+                    </div>
+                </div>
+
+                <div style={{ width: '100%', height: 300 }}>
+                    <ResponsiveContainer>
+                        <LineChart data={plant.logs && plant.logs.length > 0 ? plant.logs.map(log => ({
+                            date: new Date(log.recorded_at).toLocaleDateString(),
+                            height: log.height
+                        })) : []}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                            <XAxis dataKey="date" stroke="#aaa" />
+                            <YAxis stroke="#aaa" />
+                            <Tooltip contentStyle={{ backgroundColor: '#333', borderColor: '#444' }} />
+                            <Legend />
+                            <Line type="monotone" dataKey="height" stroke="#00ADB5" strokeWidth={3} name="Height (cm)" />
+                        </LineChart>
+                    </ResponsiveContainer>
+                    {(!plant.logs || plant.logs.length === 0) && (
+                        <p style={{ textAlign: 'center', color: '#666', fontStyle: 'italic', marginTop: '-150px' }}>
+                            No growth data yet. Add your first log above! 📈
+                        </p>
+                    )}
+                </div>
+            </div>
+
+            <div className="care-card">
+                <h2>Care Tips & Schedule</h2>
+                <ul className="care-list">
+                    <li>💧 <strong>Water:</strong> Keep soil moist, water every 2-3 days.</li>
+                    <li>☀️ <strong>Light:</strong> Needs full sun (6-8 hours daily).</li>
+                    <li>💊 <strong>Fertilizer:</strong> Apply balanced fertilizer every 2 weeks.</li>
+                    <li>📅 <strong>Next Reminder:</strong> Water tomorrow at 9:00 AM.</li>
+                </ul>
             </div>
         </div>
     );

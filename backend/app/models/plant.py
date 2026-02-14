@@ -15,3 +15,4 @@ class Plant(Base):
     plant_state = relationship("app.models.plant_state.PlantState", uselist=False, back_populates="plant")
     disease_records = relationship("app.models.disease_record.DiseaseRecord", back_populates="plant")
     reminders = relationship("app.models.reminder.Reminder", back_populates="plant")
+    logs = relationship("app.models.plant_log.PlantLog", back_populates="plant", cascade="all, delete-orphan")
