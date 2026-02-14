@@ -1,42 +1,56 @@
 # 🌱 GreenTwin
 
-**An Intelligent Plant Care Assistant Powered by Digital Twins**
+**A Digital Twin-Powered Plant Care Assistant**
 
-## Problem Statement
-Plant care is often inconsistent, reactive, and knowledge-heavy. GreenTwin addresses this by providing a unified plant care assistant that combines guidance, monitoring, and intelligence into a single, reliable system.
+## Problem Statement Coverage (Project #7)
 
-## Solution Overview
-GreenTwin is a full-stack, production-ready plant care web application. Each plant is represented as a digital twin — a continuously updated digital representation that reflects the plant’s health, growth, stress, and disease risk.
+This project strictly implements the "Plant Care Assistant" problem statement designed to guide users in plant management.
 
-### Key Innovations
-1.  **Digital Twins for Plants**: Live internal state evolving over time.
-2.  **Integrated Disease Intelligence**: ML-based disease risk assessment from leaf images.
-3.  **Unified Assistant Experience**: Coherent interface for care tips, reminders, and alerts.
+### ✅ Core Features
+| Requirement | GreenTwin Implementation |
+| :--- | :--- |
+| **Guides users** | Comprehensive Dashboard + Detail Pages |
+| **Tips** | "Care Tips & Schedule" Section with watering/sunlight advice |
+| **Reminders** | Background Scheduler + "Next Reminder" Logic |
+| **Plant Profiles** | Dedicated Plant Detail Page with Species & ID |
+| **Disease Alerts** | **AI-Powered Disease Intelligence** (MobileNetV2) |
+| **Garden Gallery** | "My Garden" Grid View with Plant Images |
+
+### ✅ Frontend Features
+-   **Plant Profile Forms**: "Add Plant" Modal with species selection.
+-   **Care Schedule UI**: List of upcoming care tasks.
+-   **Growth Timeline Charts**: **Real-Time Interactive Graph** for tracking height.
+-   **Plant-ID Mock**: Integrated into Disease Intelligence (identifies species/health).
+-   **Info Overlays**: Tooltips on Health & Growth Charts.
+-   **Accessibility**: High-contrast Dark Mode Design.
+
+### ✅ Backend Features
+-   **Plant DB API**: RESTful API for CRUD operations (SQLite/PostgreSQL).
+-   **Authentication**: Secure JWT Login/Registration.
+-   **Reminder System**: Background Task Scheduler (APScheduler).
+-   **Disease Info API**: Python ML Engine for inference.
+-   **Image Upload Backend**: Handling multipart form data for analysis.
+
+### 🌍 SDG Alignment
+-   **Goal 2: Zero Hunger**: Promotes home gardening of food crops (e.g., Tomatoes).
+-   **Goal 3: Good Health**: Encourages mental well-being through nature connection.
 
 ## Architecture
 
 ### Backend
 -   **Framework**: FastAPI (Python)
--   **Database**: PostgreSQL
+-   **Database**: SQLite (Local Dev) / PostgreSQL (Prod)
 -   **ML Inference**: PyTorch / MobileNet
 -   **Task Queue**: APScheduler
 
 ### Frontend
 -   **Framework**: React (Vite)
--   **Styling**: CSS Modules / Styled Components
--   **State Management**: React Context
-
-### ML Models
--   **Tomato Disease Model**: CNN based on MobileNetV2, trained on PlantVillage dataset.
+-   **Styling**: Modern CSS Variables (Premium Dark Theme)
+-   **Visualization**: Recharts (Data Driven)
 
 ## Setup Instructions
 
-### Prerequisites
--   Python 3.9+
--   Node.js 16+
--   PostgreSQL
-
-### Backend Setup
+### Backend
 1.  Navigate to `backend/`:
     ```bash
     cd backend
@@ -50,7 +64,7 @@ GreenTwin is a full-stack, production-ready plant care web application. Each pla
     uvicorn app.main:app --reload
     ```
 
-### Frontend Setup
+### Frontend
 1.  Navigate to `frontend/`:
     ```bash
     cd frontend
