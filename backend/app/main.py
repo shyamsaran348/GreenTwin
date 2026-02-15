@@ -28,6 +28,16 @@ app.include_router(plants.router)
 app.include_router(disease.router)
 app.include_router(reminders.router)
 
+from fastapi.staticfiles import StaticFiles
+import os
+
+# Create uploads directory if not exists
+if not os.path.exists("uploads"):
+    os.makedirs("uploads")
+
+# Mount uploads directory
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 from app.database import engine, Base
 from app.models import plant, user, plant_state, disease_record, reminder, plant_log
 

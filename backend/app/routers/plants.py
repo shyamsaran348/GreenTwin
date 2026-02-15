@@ -42,8 +42,12 @@ from app.schemas.plant_log_schema import PlantLogCreate, PlantLogOut
 
 @router.get("/{plant_id}", response_model=PlantOut)
 def get_plant(plant_id: int, db: Session = Depends(database.get_db), current_user: User = Depends(get_current_user)):
-    # Eager load plant_state and logs
-    plant = db.query(Plant).options(joinedload(Plant.plant_state), joinedload(Plant.logs)).filter(Plant.id == plant_id, Plant.user_id == current_user.id).first()
+    # Eager load plant_state, logs, and disease_records
+    plant = db.query(Plant).options(
+        joinedload(Plant.plant_state), 
+        joinedload(Plant.logs),
+        joinedload(Plant.disease_records)
+    ).filter(Plant.id == plant_id, Plant.user_id == current_user.id).first()
     if not plant:
         raise HTTPException(status_code=404, detail="Plant not found")
     return plant
@@ -81,6 +85,25 @@ def delete_plant(plant_id: int, db: Session = Depends(database.get_db), current_
     if plant.plant_state:
         db.delete(plant.plant_state)
         
-    db.delete(plant)
     db.commit()
     return {"message": "Plant deleted successfully"}
+
+@router.post("/{plant_id}/water")
+def water_plant(plant_id: int, db: Session = Depends(database.get_db), current_user: User = Depends(get_current_user)):
+    from app.services.twin_engine import TwinEngine
+    
+    plant = db.query(Plant).options(joinedload(Plant.plant_state)).filter(Plant.id == plant_id, Plant.user_id == current_user.id).first()
+    if not plant:
+        raise HTTPException(status_code=404, detail="Plant not found")
+        
+    if plant.plant_state:
+        # Novelty: Simulate biological recovery
+        plant.plant_state = TwinEngine.simulate_recovery(plant.plant_state, water_added=True)
+        # Recalculate based on new stress levels
+        plant.plant_state.health_score = TwinEngine.calculate_health_score(plant.plant_state)
+        
+        db.add(plant.plant_state)
+        db.commit()
+        db.refresh(plant.plant_state)
+        
+    return {"message": "Plant watered", "new_health": plant.plant_state.health_score}

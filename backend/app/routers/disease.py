@@ -51,6 +51,8 @@ async def analyze_leaf(
             confidence if predicted_class != "Healthy" else 0.0, # Pass confidence logic adjustment
             predicted_class
         )
+        # Recalculate health score explicitly to ensure it updates
+        updated_state.health_score = TwinEngine.calculate_health_score(updated_state)
         db.add(updated_state)
     
     # Record History

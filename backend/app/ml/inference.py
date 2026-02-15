@@ -66,9 +66,50 @@ class DiseaseInference:
                 predicted_class = self.classes[predicted.item()]
                 conf_score = confidence.item()
                 
-                return {"class": predicted_class, "confidence": conf_score}
+                # Heuristic Override for False Positives
+                # If the image is clearly green/healthy but model predicts severe disease, trust the color.
+                final_class = self._apply_color_heuristic(image, predicted_class, conf_score)
+                
+                return {"class": final_class, "confidence": conf_score}
         except Exception as e:
             print(f"Prediction error: {e}")
             return {"class": "Error", "confidence": 0.0}
+
+    def _apply_color_heuristic(self, image: Image.Image, predicted_class: str, confidence: float) -> str:
+        """
+        Check if pixel stats contradict the model prediction.
+        E.g., If Image is >50% Green, it's unlikely to be 'Late_blight' (which turns leaves brown/black).
+        """
+        try:
+            # 1. Resize for speed
+            img_small = image.resize((50, 50))
+            pixels = list(img_small.getdata())
+            
+            green_pixels = 0
+            total_pixels = len(pixels)
+            
+            for p in pixels:
+                r, g, b = p[0], p[1], p[2]
+                # "Healthy Green" definition: Green is dominant channel
+                if g > r and g > b and g > 50:
+                    green_pixels += 1
+            
+            green_ratio = green_pixels / total_pixels
+            
+            # Debug
+            print(f"Heuristic Check: Predicted {predicted_class}, Green Ratio: {green_ratio:.2f}")
+
+            # 2. Logic: If prediction is a severe disease but image is excessively green -> Override
+            if "healthy" not in predicted_class.lower():
+                # If green ratio is very high (>40%), it's likely a false positive
+                if green_ratio > 0.45: 
+                    print(f"OVERRIDE: Detected {green_ratio:.2f} green. Switching to Healthy.")
+                    return "Tomato___healthy"
+            
+            return predicted_class
+
+        except Exception as e:
+            print(f"Heuristic failed: {e}")
+            return predicted_class
 
 inference_service = DiseaseInference()

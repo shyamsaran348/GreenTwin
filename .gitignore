@@ -22,3 +22,10 @@ ml_models/dataset/
 ml_models/PlantVillage/
 frontend/node_modules/
 node_modules/
+# Local DB
+*.db
+*.sqlite3
+
+# User Uploads
+backend/uploads/
+uploads/

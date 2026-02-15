@@ -28,6 +28,8 @@ The system is designed for real usage, not demonstration, with persistent data, 
 GreenTwin introduces three key innovations:
 
 1.  **Digital Twins for Plants**: Each plant maintains a live internal state that evolves over time instead of static records.
+    *   **Novelty**: Implements a **Synergistic Stress Model** where Disease and Drought multiply each other's impact (Non-linear decay).
+    *   **Biological Realism**: Includes a **Recovery Lag** system—plants heal slowly over time rather than instantly resetting.
 2.  **Integrated Disease Intelligence**: Machine learning analyzes leaf images to assess disease risk and feed results directly into plant health simulation.
 3.  **Unified Assistant Experience**: Care tips, reminders, disease alerts, and progress tracking are delivered through a single coherent interface rather than separate tools.
 
