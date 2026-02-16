@@ -32,6 +32,7 @@ GreenTwin introduces three key innovations:
     *   **Biological Realism**: Includes a **Recovery Lag** system—plants heal slowly over time rather than instantly resetting.
 2.  **Integrated Disease Intelligence**: Machine learning analyzes leaf images to assess disease risk and feed results directly into plant health simulation.
 3.  **Unified Assistant Experience**: Care tips, reminders, disease alerts, and progress tracking are delivered through a single coherent interface rather than separate tools.
+4.  **Active Adaptation (Auto-Pilot)**: The system doesn't just monitor; it **acts**. It automatically skips watering schedules during rain and triggers emergency alerts during heatwaves.
 
 ## 4. Application Architecture
 
@@ -45,7 +46,14 @@ Each plant twin maintains:
 
 These values are updated based on user care actions, disease prediction results, and historical trends. This allows the system to generate predictive alerts, not just reactive warnings.
 
-### 4.2 Machine Learning Architecture
+### 4.2 Intelligent Care Advisor (The Brain) 🧠
+Beyond simple schedules, GreenTwin uses a **Species-Specific Knowledge Base** combined with real-time **Hyper-Local Weather Telemetry**.
+*   **Context-Aware Advice**: "Mist your Ferns" (Low Humidity) vs "Water your Cactus" (Heatwave).
+*   **Auto-Pilot Scheduler**:
+    *   *Rain Detected*: **Auto-Skips** watering tasks.
+    *   *Heat > 35°C*: Creates **URGENT** priority tasks.
+
+### 4.3 Machine Learning Architecture
 GreenTwin uses a plant-specific disease intelligence framework, reflecting real biological differences between plants.
 
 **ML Flow:**
@@ -107,6 +115,9 @@ This comprehensive dataset ensures reliable training and stable real-world behav
 *   ✅ Leaf image upload and disease results
 *   ✅ Garden gallery with history
 *   ✅ Alert banners and informational overlays
+*   ✅ **Intelligent Care Advisor** (Species + Weather specific tips)
+*   ✅ **Real-Time Environment** (Temp, Humidity, Wind Speed)
+*   ✅ **Auto-Pilot Mode** (Rain Skips & Heat Emergency Alerts)
 *   ✅ Accessibility-friendly interface
 
 ## 8. SDG Alignment
