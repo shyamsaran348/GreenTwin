@@ -6,13 +6,82 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, LineChart, L
 const PlantDetail = () => {
     const { id } = useParams();
     const [plant, setPlant] = useState(null);
+    const [weather, setWeather] = useState(null);
     const [analyzing, setAnalyzing] = useState(false);
     const [file, setFile] = useState(null);
     const [lastAnalysis, setLastAnalysis] = useState(null);
+    const [advice, setAdvice] = useState(null);
 
+    // 1. Fetch Plant Details
     useEffect(() => {
         fetchPlant();
     }, [id]);
+
+    // 2. Fetch Weather
+    useEffect(() => {
+        fetchWeather();
+    }, []);
+
+    // 3. Sync Environment & Get Advice
+    useEffect(() => {
+        if (plant && weather) {
+            syncEnvironment(weather.temperature);
+            fetchAdvice(plant.species, weather.temperature, weather.condition, weather.humidity, weather.wind_speed);
+        }
+    }, [plant?.id, weather?.temperature, weather?.humidity]);
+
+    const fetchAdvice = async (species, temp, condition, humidity, wind) => {
+        try {
+            // Encode condition to safely pass spaces
+            const cond = encodeURIComponent(condition || "Clear");
+            const hum = humidity || 50;
+            const w = wind || 0;
+            const response = await api.get(`/advice/?species=${species}&temperature=${temp}&condition=${cond}&humidity=${hum}&wind_speed=${w}`);
+            setAdvice(response.data);
+        } catch (error) {
+            console.error("Failed to fetch advice", error);
+        }
+    };
+
+    const syncEnvironment = async (temp) => {
+        try {
+            await api.post(`/plants/${id}/environment`, {
+                temperature: temp
+            });
+        } catch (error) {
+            console.error("Failed to sync environment", error);
+        }
+    }
+
+    const fetchWeather = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                try {
+                    const { latitude, longitude } = position.coords;
+                    const response = await api.get(`/weather/?lat=${latitude}&lon=${longitude}`);
+                    setWeather(response.data);
+                } catch (error) {
+                    console.error("Failed to fetch weather", error);
+                }
+            }, (error) => {
+                console.error("Geolocation error", error);
+                fetchDefaultWeather();
+            });
+        } else {
+            fetchDefaultWeather();
+        }
+    };
+
+    const fetchDefaultWeather = async () => {
+        try {
+            // Default: New York
+            const response = await api.get(`/weather/?lat=40.7128&lon=-74.0060`);
+            setWeather(response.data);
+            // Sync default weather too? Maybe not, could be misleading.
+        } catch (error) {
+            console.error("Failed to fetch default weather", error);
+        }
+    }
 
     const fetchPlant = async () => {
         try {
@@ -215,11 +284,11 @@ const PlantDetail = () => {
                 </div>
             </div>
 
-            <div className="care-card" style={{ borderLeft: isCritical ? '5px solid #f44336' : '5px solid #00ADB5' }}>
-                {/* ... Care content ... */}
+            {/* Smart Care Advisor */}
+            <div className="care-card" style={{ borderLeft: isCritical ? '5px solid #f44336' : (advice?.severity === 'critical' ? '5px solid #f44336' : (advice?.severity === 'warning' ? '5px solid #ff9800' : '5px solid #00ADB5')) }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                    <h2 style={{ marginBottom: 0, color: isCritical ? '#f44336' : 'white' }}>
-                        {isCritical ? '🚨 Emergency Recovery Plan' : 'Care Tips & Schedule'}
+                    <h2 style={{ marginBottom: 0, color: 'white' }}>
+                        🧠 Smart Care Advisor
                     </h2>
                     <button
                         onClick={async () => {
@@ -231,35 +300,34 @@ const PlantDetail = () => {
                                 console.error(e);
                             }
                         }}
-                        style={{ padding: '8px 15px', background: isCritical ? '#f44336' : '#00ADB5', border: 'none', borderRadius: '20px', color: 'white', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(0,0,0,0.3)' }}
+                        style={{ padding: '8px 15px', background: '#00ADB5', border: 'none', borderRadius: '20px', color: 'white', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(0,0,0,0.3)' }}
                     >
-                        {isCritical ? '🚑 Apply Treatment' : '💧 Water Plant'}
+                        💧 Water Plant
                     </button>
                 </div>
 
-                {(plant.plant_state?.disease_risk_index > 0.3 && plant.plant_state?.water_stress > 0.3) && (
-                    <div style={{ background: 'rgba(255, 0, 0, 0.2)', border: '1px solid red', padding: '10px', borderRadius: '8px', marginBottom: '15px', color: '#ffaaaa' }}>
-                        ⚠️ <strong>Compound Stress Warning:</strong> High Disease Risk + Water Stress is causing rapid health decline (Synergistic Damage).
+                {advice ? (
+                    <div style={{ background: 'rgba(0,0,0,0.2)', padding: '15px', borderRadius: '10px', marginBottom: '15px', borderLeft: `4px solid ${advice.severity === 'critical' ? '#f44336' : (advice.severity === 'warning' ? '#ff9800' : '#4CAF50')}` }}>
+                        <h3 style={{ margin: '0 0 5px 0', color: '#eee' }}>Care Tip of the Day:</h3>
+                        <p style={{ fontSize: '1.1em', fontStyle: 'italic', color: 'white' }}>"{advice.text}"</p>
                     </div>
+                ) : (
+                    <p>Loading advice...</p>
                 )}
 
+                <h3 style={{ marginTop: '20px', color: '#aaa' }}>Standard Schedule</h3>
                 <ul className="care-list">
-                    {isCritical ? (
-                        <>
-                            <li>🛑 <strong>ISOLATE:</strong> Move plant away from others to prevent spread.</li>
-                            <li>✂️ <strong>PRUNE:</strong> Remove infected leaves (like the one analyzed).</li>
-                            <li>💧 <strong>HYDRATE:</strong> Water immediately but avoid wetting leaves.</li>
-                            <li>🧪 <strong>TREAT:</strong> Apply organic fungicide (Neem Oil) every 7 days.</li>
-                        </>
-                    ) : (
-                        <>
-                            <li>💧 <strong>Water:</strong> Keep soil moist, water every 2-3 days.</li>
-                            <li>☀️ <strong>Light:</strong> Needs full sun (6-8 hours daily).</li>
-                            <li>💊 <strong>Fertilizer:</strong> Apply balanced fertilizer every 2 weeks.</li>
-                            <li>📅 <strong>Next Reminder:</strong> Water tomorrow at 9:00 AM.</li>
-                        </>
-                    )}
+                    {/* Fallback standard tips if advice fails or as supplementary info */}
+                    <li>💧 <strong>Water:</strong> {advice?.profile?.water === 3 ? "Frequent / Keep Moist" : (advice?.profile?.water === 1 ? "Sparse / Let Dry" : "Moderate / Every 2-3 Days")}</li>
+                    <li>☀️ <strong>Heat Tolerance:</strong> {advice?.profile?.heat === 3 ? "High (Loves Sun)" : (advice?.profile?.heat === 1 ? "Low (Needs Shade)" : "Medium")}</li>
+                    <li>📝 <strong>Species Note:</strong> {advice?.profile?.desc || "General care recommended."}</li>
                 </ul>
+
+                {(plant.plant_state?.disease_risk_index > 0.3 && plant.plant_state?.water_stress > 0.3) && (
+                    <div style={{ background: 'rgba(255, 0, 0, 0.2)', border: '1px solid red', padding: '10px', borderRadius: '8px', marginTop: '15px', color: '#ffaaaa' }}>
+                        ⚠️ <strong>Compound Stress Warning:</strong> High Disease Risk + Water Stress is causing rapid health decline.
+                    </div>
+                )}
             </div>
 
             {/* Disease History Gallery */}
@@ -286,6 +354,44 @@ const PlantDetail = () => {
                 </div>
             )}
 
+            {/* Weather & Environment Card */}
+            <div className="weather-card" style={{ marginTop: '20px', background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)', padding: '20px', borderRadius: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                        <h2 style={{ margin: 0, color: 'white' }}>🌤️ Local Micro-Climate</h2>
+                        <p style={{ color: '#ddd', fontSize: '0.9em' }}>Real-time environmental impact on this plant.</p>
+                    </div>
+                    {weather ? (
+                        <div style={{ textAlign: 'right' }}>
+                            <h1 style={{ margin: 0, fontSize: '2.5em', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>{weather.temperature}°C</h1>
+                            <p style={{ margin: 0, fontWeight: 'bold' }}>{weather.condition}</p>
+                        </div>
+                    ) : (
+                        <p>Loading Weather...</p>
+                    )}
+                </div>
+
+                {weather && (
+                    <div style={{ display: 'flex', gap: '20px', marginTop: '15px' }}>
+                        <div style={{ flex: 1, background: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
+                            <span style={{ fontSize: '1.5em' }}>💧</span>
+                            <div style={{ fontSize: '0.9em', color: '#ccc' }}>Humidity</div>
+                            <div style={{ fontSize: '1.2em', fontWeight: 'bold' }}>{weather.humidity}%</div>
+                        </div>
+                        <div style={{ flex: 1, background: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
+                            <span style={{ fontSize: '1.5em' }}>💨</span>
+                            <div style={{ fontSize: '0.9em', color: '#ccc' }}>Wind</div>
+                            <div style={{ fontSize: '1.2em', fontWeight: 'bold' }}>{weather.wind_speed} km/h</div>
+                        </div>
+                    </div>
+                )}
+
+                {weather && weather.temperature > 30 && (
+                    <div style={{ marginTop: '15px', padding: '10px', background: 'rgba(255, 68, 68, 0.2)', border: '1px solid #ff4444', borderRadius: '8px', color: '#ffcccc' }}>
+                        🔥 <strong>Heat Stress Detected!</strong> High temperature is causing rapid water loss. Water more frequently!
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

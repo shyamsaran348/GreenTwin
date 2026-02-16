@@ -80,3 +80,34 @@ class TwinEngine:
         state.health_score = TwinEngine.calculate_health_score(state)
         state.last_updated = datetime.utcnow()
         return state
+
+    @staticmethod
+    def update_from_environment(state: PlantState, temperature: float) -> PlantState:
+        """
+        Apply environmental factors to the plant twin.
+        """
+        # Heat Stress Logic
+        # Optimal range: 18-30C
+        if temperature > 30.0:
+            # Heat stress increases
+            excess_heat = temperature - 30.0
+            # 0.05 stress per degree over 30
+            heat_impact = excess_heat * 0.05
+            state.heat_stress = min(1.0, state.heat_stress + heat_impact)
+            
+            # High heat also causes water loss (Evapotranspiration)
+            state.water_stress = min(1.0, state.water_stress + (heat_impact * 0.5))
+            
+        elif temperature < 10.0:
+            # Cold stress (reuse heat_stress variable as 'Temperature Stress')
+            excess_cold = 10.0 - temperature
+            cold_impact = excess_cold * 0.05
+            state.heat_stress = min(1.0, state.heat_stress + cold_impact)
+        
+        else:
+            # Ideal range: Recover from temperature stress
+            state.heat_stress = max(0.0, state.heat_stress - 0.1)
+
+        state.health_score = TwinEngine.calculate_health_score(state)
+        state.last_updated = datetime.utcnow()
+        return state

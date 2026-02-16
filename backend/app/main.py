@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, plants, disease, reminders
+from app.routers import auth, plants, disease, reminders, weather
 from app.services.scheduler import start_scheduler
 # from app.config import settings
 
@@ -27,6 +27,11 @@ app.include_router(auth.router)
 app.include_router(plants.router)
 app.include_router(disease.router)
 app.include_router(reminders.router)
+app.include_router(weather.router)
+from app.routers import advice
+app.include_router(advice.router)
+from app.routers import users
+app.include_router(users.router)
 
 from fastapi.staticfiles import StaticFiles
 import os

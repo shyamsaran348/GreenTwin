@@ -60,14 +60,23 @@ The platform supports multiple plant models, each independently trained (current
 
 ## 5. Dataset Details
 *   **Dataset Used**: PlantVillage Dataset (Public agricultural research dataset).
-*   **Diseases Implemented**:
-    *   Healthy
-    *   Early Blight
-    *   Late Blight
-    *   Leaf Mold
-    *   *and more...*
+*   **Supported Species (14 Types)**:
+    *   **Apple**: Scab, Black Rot, Cedar Rust, Healthy
+    *   **Blueberry**: Healthy
+    *   **Cherry**: Powdery Mildew, Healthy
+    *   **Corn**: Gray Leaf Spot, Common Rust, Northern Leaf Blight, Healthy
+    *   **Grape**: Black Rot, Esca (Black Measles), Leaf Blight, Healthy
+    *   **Orange**: Huanglongbing (Citrus Greening)
+    *   **Peach**: Bacterial Spot, Healthy
+    *   **Pepper, Bell**: Bacterial Spot, Healthy
+    *   **Potato**: Early Blight, Late Blight, Healthy
+    *   **Raspberry**: Healthy
+    *   **Soybean**: Healthy
+    *   **Squash**: Powdery Mildew
+    *   **Strawberry**: Leaf Scorch, Healthy
+    *   **Tomato**: Bacterial Spot, Early Blight, Late Blight, Leaf Mold, Septoria Leaf Spot, Spider Mites, Target Spot, Mosaic Virus, Yellow Leaf Curl Virus, Healthy
 
-This dataset ensures reliable training, explainable predictions, and stable real-world behavior.
+This comprehensive dataset ensures reliable training and stable real-world behavior across a wide variety of garden plants.
 
 ## 6. Technology Stack
 ### Frontend

@@ -9,8 +9,8 @@ import torch.nn as nn
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # Points to backend/
 PROJECT_ROOT = os.path.dirname(BASE_DIR) # Points to GreenTwin/
 
-MODEL_PATH = os.path.join(PROJECT_ROOT, "ml_models/tomato/best_model.pth")
-CLASSES_PATH = os.path.join(PROJECT_ROOT, "ml_models/tomato/classes.json")
+MODEL_PATH = os.path.join(PROJECT_ROOT, "ml_models/universal/universal_model.pth")
+CLASSES_PATH = os.path.join(PROJECT_ROOT, "ml_models/universal/classes.json")
 
 class DiseaseInference:
     def __init__(self):
@@ -28,7 +28,7 @@ class DiseaseInference:
 
     def load_model(self):
         if not os.path.exists(MODEL_PATH) or not os.path.exists(CLASSES_PATH):
-            print("Model or classes file not found. Inference will be mocked.")
+            print("Universal Model or classes file not found. Inference will be mocked.")
             return
 
         try:
@@ -44,9 +44,9 @@ class DiseaseInference:
             # Load Weights
             self.model.load_state_dict(torch.load(MODEL_PATH, map_location=self.device))
             self.model.eval()
-            print("Model loaded successfully.")
+            print("Universal Model loaded successfully.")
         except Exception as e:
-            print(f"Failed to load model: {e}")
+            print(f"Failed to load universal model: {e}")
             self.model = None
 
     def predict(self, image_path: str):
@@ -104,7 +104,15 @@ class DiseaseInference:
                 # If green ratio is very high (>40%), it's likely a false positive
                 if green_ratio > 0.45: 
                     print(f"OVERRIDE: Detected {green_ratio:.2f} green. Switching to Healthy.")
-                    return "Tomato___healthy"
+                    # Return a generic healthy label or try to construct one based on species if available
+                    # For now, let's look at the prefix. universal classes differ (e.g. 'Apple___Black_rot')
+                    # We can try to guess the healthy class or just return 'Healthy'
+                    # The safest existing class in universal dataset is usually "Species___healthy"
+                    
+                    parts = predicted_class.split("___")
+                    if len(parts) > 0:
+                         return f"{parts[0]}___healthy"
+                    return "Healthy"
             
             return predicted_class
 

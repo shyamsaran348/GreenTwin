@@ -9,6 +9,7 @@ class Plant(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     name = Column(String, index=True)
     species = Column(String, index=True)
+    image_path = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     owner = relationship("app.models.user.User", back_populates="plants")
